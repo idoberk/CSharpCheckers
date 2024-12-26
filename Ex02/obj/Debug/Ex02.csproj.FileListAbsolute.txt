@@ -1,0 +1,9 @@
+C:\Users\idob5\OneDrive - Holon Institute of Technology\Assignments\Year 3\SemA\C#\25A Ex02 IdoBerkovits 208607192 DekelMotzan 206010464\Ex02\bin\Debug\Ex02.exe.config
+C:\Users\idob5\OneDrive - Holon Institute of Technology\Assignments\Year 3\SemA\C#\25A Ex02 IdoBerkovits 208607192 DekelMotzan 206010464\Ex02\bin\Debug\Ex02.exe
+C:\Users\idob5\OneDrive - Holon Institute of Technology\Assignments\Year 3\SemA\C#\25A Ex02 IdoBerkovits 208607192 DekelMotzan 206010464\Ex02\bin\Debug\Ex02.pdb
+C:\Users\idob5\OneDrive - Holon Institute of Technology\Assignments\Year 3\SemA\C#\25A Ex02 IdoBerkovits 208607192 DekelMotzan 206010464\Ex02\bin\Debug\Ex02.ConsoleUtils.dll
+C:\Users\idob5\OneDrive - Holon Institute of Technology\Assignments\Year 3\SemA\C#\25A Ex02 IdoBerkovits 208607192 DekelMotzan 206010464\Ex02\obj\Debug\Ex02.csproj.AssemblyReference.cache
+C:\Users\idob5\OneDrive - Holon Institute of Technology\Assignments\Year 3\SemA\C#\25A Ex02 IdoBerkovits 208607192 DekelMotzan 206010464\Ex02\obj\Debug\Ex02.csproj.CoreCompileInputs.cache
+C:\Users\idob5\OneDrive - Holon Institute of Technology\Assignments\Year 3\SemA\C#\25A Ex02 IdoBerkovits 208607192 DekelMotzan 206010464\Ex02\obj\Debug\Ex02.csproj.Up2Date
+C:\Users\idob5\OneDrive - Holon Institute of Technology\Assignments\Year 3\SemA\C#\25A Ex02 IdoBerkovits 208607192 DekelMotzan 206010464\Ex02\obj\Debug\Ex02.exe
+C:\Users\idob5\OneDrive - Holon Institute of Technology\Assignments\Year 3\SemA\C#\25A Ex02 IdoBerkovits 208607192 DekelMotzan 206010464\Ex02\obj\Debug\Ex02.pdb
