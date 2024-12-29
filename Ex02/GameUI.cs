@@ -66,7 +66,7 @@ namespace Ex02
         
         private  void printRowLabel(int i_BoardSize)
         {
-            char rowLabel = 'a';
+            char rowLabel = 'A';
 
             for (int i = 0; i < i_BoardSize; i++)
             {
@@ -90,7 +90,7 @@ namespace Ex02
 
         private static void printColLabel(int i_num)
         {
-            char colPosition = 'A';
+            char colPosition = 'a';
 
             for (int i = 0; i < i_num; i++)
             {
