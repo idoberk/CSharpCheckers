@@ -37,9 +37,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameBoard.cs" />
+    <Compile Include="GameSettings.cs" />
+    <Compile Include="MovePiece.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="PiecePosition.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="GameUI.cs" />
+    <Compile Include="ConsoleUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Ex02.ConsoleUtils">
