@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Ex02
 {
@@ -20,6 +21,11 @@ namespace Ex02
             m_Board = new char[r_BoardSize, r_BoardSize];
 
             initializeBoard();
+        }
+
+        public int GetBoardSize
+        {
+            get { return r_BoardSize; }
         }
 
         public char GetPieceAtPosition(PiecePosition i_PiecePosition)
@@ -72,25 +78,105 @@ namespace Ex02
 
         public static int IsBoardSizeValid(string i_BoardSizeInput)
         {
-            int returnState = 0;
+            int userChoice = 0;
 
             if (int.TryParse(i_BoardSizeInput, out int boardSize))
             {
                 if (boardSize == 1)
                 {
-                    returnState = (int)eBoardSize.Small;
+                    userChoice = (int)eBoardSize.Small;
                 }
                 else if (boardSize == 2)
                 {
-                    returnState = (int)eBoardSize.Medium;
+                    userChoice = (int)eBoardSize.Medium;
                 }
                 else if (boardSize == 3)
                 {
-                    returnState = (int)eBoardSize.Large;
+                    userChoice = (int)eBoardSize.Large;
                 }
             }
 
-            return returnState;
+            return userChoice;
         }
+
+        public void MovePlayerPiece(MovePiece i_MovePiece)
+        {
+            m_Board[i_MovePiece.ToPosition.Row, i_MovePiece.ToPosition.Col] = m_Board[i_MovePiece.FromPosition.Row, i_MovePiece.FromPosition.Col];
+            m_Board[i_MovePiece.FromPosition.Row, i_MovePiece.FromPosition.Col] = (char)Player.ePlayerPieceType.Empty;
+
+        }
+
+        public List<MovePiece> GetValidMoves(PiecePosition i_PiecePosition, Player i_CurrentPlayer)
+        {
+            List<MovePiece> validMoves = new List<MovePiece>();
+            char currentPlayerPiece = (char)i_CurrentPlayer.PieceType;
+
+            if (currentPlayerPiece == ' ' || currentPlayerPiece != GetPieceAtPosition(i_PiecePosition))
+            {
+                validMoves = null;
+            }
+
+            return validMoves;
+        }
+
+        public void CapturePiece(MovePiece i_MovePiece)
+        {
+            int middleRow = (i_MovePiece.FromPosition.Row + i_MovePiece.ToPosition.Row) / 2;
+            int middleCol = (i_MovePiece.FromPosition.Col + i_MovePiece.ToPosition.Col) / 2;
+
+            m_Board[middleRow, middleCol] = (char)Player.ePlayerPieceType.Empty;
+        }
+
+        public bool IsValidMove(MovePiece i_MovePiece)
+        {
+            bool isValid = true;
+
+            if (!IsMoveInBoundaries(i_MovePiece.FromPosition, i_MovePiece.ToPosition))
+            {
+                isValid = false;
+            }
+
+            if (isValid && GetPieceAtPosition(i_MovePiece.ToPosition) != (char)Player.ePlayerPieceType.Empty)
+            {
+                isValid = false;
+            }
+
+            if (isValid && !IsValidMoveDistance(i_MovePiece.FromPosition, i_MovePiece.ToPosition))
+            {
+                isValid = false;
+            }
+
+            if (isValid && !IsPositionAvailable(i_MovePiece.ToPosition))
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        public bool IsMoveInBoundaries(PiecePosition i_FromPosition, PiecePosition i_ToPosition)
+        {
+
+            bool isFromRowMoveValid = i_FromPosition.Row >= 0 && i_FromPosition.Row < GetBoardSize;
+            bool isFromColMoveValid = i_FromPosition.Col >= 0 && i_FromPosition.Col < GetBoardSize;
+            bool isToRowMoveValid = i_ToPosition.Row >= 0 && i_ToPosition.Row < GetBoardSize;
+            bool isToColMoveValid = i_ToPosition.Col >= 0 && i_ToPosition.Col < GetBoardSize;
+
+            return isFromRowMoveValid && isFromColMoveValid && isToRowMoveValid && isToColMoveValid;
+        }
+
+        public bool IsValidMoveDistance(PiecePosition i_FromPosition, PiecePosition i_ToPosition)
+        {
+            int moveDistance = Math.Abs(i_ToPosition.Row - i_FromPosition.Row);
+            bool isValidDistance = moveDistance == 1;
+
+            return isValidDistance;
+        }
+
+        public bool IsPositionAvailable(PiecePosition i_ToPosition)
+        {
+            return GetPieceAtPosition(i_ToPosition) == (char)Player.ePlayerPieceType.Empty;
+        }
+
     }
 }

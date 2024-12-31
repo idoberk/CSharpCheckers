@@ -1,5 +1,4 @@
 ﻿using System;
-using Ex02.ConsoleUtils;
 using static Ex02.ConsoleUI;
 
 
@@ -9,10 +8,15 @@ namespace Ex02
     {
         static void Main()
         {
-            GameSettings settings = GetGameSettings();
-            GameBoard gameBoard = new GameBoard(settings.BoardSize);
-            ConsoleUI board = new ConsoleUI(gameBoard);
-            board.PrintGameBoard(settings.BoardSize);
+            GameSettings settings = GameSettings.CreateNewGame();
+            Game game = new Game(settings);
+            ConsoleUI ui = new ConsoleUI(game);
+            //ui.DisplayGameBoard(settings.Board.GetBoardSize);
+            for (int i = 0; i < 3; i++)
+            {   
+                ui.DisplayGameBoard();
+                // ui.ClearScreen();
+            }
 
             Console.ReadLine();
         }

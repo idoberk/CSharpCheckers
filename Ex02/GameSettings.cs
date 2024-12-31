@@ -4,13 +4,21 @@ namespace Ex02
 {
     public class GameSettings
     {
-        private int m_BoardSize;
+        private GameBoard m_GameBoard;
+        private int m_GameMode;
         private Player m_Player1;
         private Player m_Player2;
 
-        public int BoardSize
+        public enum eGameMode
         {
-            get { return m_BoardSize; }
+            PlayerVsPlayer = 1,
+            PlayerVsComputer = 2
+        }
+
+        public GameBoard Board
+        {
+            get { return m_GameBoard; }
+            private set { m_GameBoard = value; }
         }
 
         public Player Player1
@@ -23,11 +31,19 @@ namespace Ex02
             get { return m_Player2; }
         }
 
-        public GameSettings(int i_BoardSize, string i_Player1) //, Player i_Player2)
+        public static GameSettings CreateNewGame()
         {
-            m_BoardSize = i_BoardSize;
+            ConsoleUI ui = new ConsoleUI(null);
+            return ui.GetGameSettings();
+
+        }
+
+        public GameSettings(int i_GameMode, int i_BoardSize, string i_Player1, string i_Player2)
+        {
+            m_GameMode = i_GameMode;
+            m_GameBoard = new GameBoard(i_BoardSize);
             m_Player1 = new Player(i_Player1);
-            // m_Player2 = i_Player2;
+            m_Player2 = new Player(i_Player2);
         }
     }
 }
