@@ -6,13 +6,16 @@ namespace Ex02
 {
     public class Game
     {
-        // TODO: Check if the piece is king
         private GameBoard m_GameBoard;
         private int m_BoardSize;
         private ePlayerNumber m_CurrentPlayer;
         private ePlayerNumber m_NextPlayer;
         private string m_Player1Name;
         private string m_Player2Name;
+        private int m_Player1Score = 0;
+        private int m_Player2Score = 0;
+        private readonly int r_KingValue = 4;
+        private readonly int r_RegularValue = 1;
         private List<MovePiece> m_RegularMoves;
         private List<MovePiece> m_CaptureMoves;
         private PiecePosition m_LastMovePosition;
@@ -20,7 +23,7 @@ namespace Ex02
         public GameBoard Board
         {
             get { return m_GameBoard; }
-          
+
             private set
             {
                 m_GameBoard = value;
@@ -105,6 +108,16 @@ namespace Ex02
             get { return CaptureMoves.Count > 0; }
         }
 
+        public int Player1Score
+        {
+            get { return m_Player1Score; }
+        }
+
+        public int Player2Score
+        {
+            get { return m_Player2Score; }
+        }
+
         public Game(GameSettings i_Settings)
         {
             m_BoardSize = i_Settings.Board.GetBoardSize;
@@ -129,7 +142,7 @@ namespace Ex02
             //    GetValidMoves();
             //}
 
-            GetValidMoves();
+            GetValidMoves(); //check if needed to stay
 
             if (m_LastMovePosition != null)
             {
@@ -168,7 +181,7 @@ namespace Ex02
         {
             return CurrentPlayer == ePlayerNumber.Player1 ? Player1Name : Player2Name;
         }
-
+                
         public char GetCurrentPlayerPiece()
         {
             char currentPlayerPiece = CurrentPlayer == ePlayerNumber.Player1
@@ -266,16 +279,25 @@ namespace Ex02
         private bool isPlayerPiece(PiecePosition i_PiecePosition)
         {
             char charAtPosition = GetPieceAtPosition(i_PiecePosition);
-            bool isPlayerPiece = charAtPosition == GetCurrentPlayerPiece();
+            bool isPlayerPiece = charAtPosition == GetCurrentPlayerPiece() || IsPieceKing(charAtPosition);
 
             return isPlayerPiece;
         }
 
         private bool isValidDirection(PiecePosition i_FromPosition, PiecePosition i_ToPosition)
         {
-            char currentPlayerPiece = GetCurrentPlayerPiece();
+            char currentPlayerPiece = GetPieceAtPosition(i_FromPosition);
             int[] playerDirection = getPieceDirection(currentPlayerPiece);
-            bool isValidDirection = Math.Sign(i_ToPosition.Row - i_FromPosition.Row) == playerDirection[0];
+            bool isValidDirection = false;
+
+            if (IsPieceKing(currentPlayerPiece))
+            {
+                isValidDirection = true;
+            }
+            else
+            {
+                isValidDirection = Math.Sign(i_ToPosition.Row - i_FromPosition.Row) == playerDirection[0];
+            }
 
             return isValidDirection;
         }
@@ -301,11 +323,14 @@ namespace Ex02
                 {
                     int middleRow = (i_MovePiece.FromPosition.Row + i_MovePiece.ToPosition.Row) / 2;
                     int middleCol = (i_MovePiece.FromPosition.Col + i_MovePiece.ToPosition.Col) / 2;
-                    char capturedPiece = m_GameBoard.GetPieceAtPosition(new PiecePosition(middleRow, middleCol));
+                    PiecePosition capturedPosition = new PiecePosition(middleRow, middleCol);
+                    char capturedPiece = m_GameBoard.GetPieceAtPosition(capturedPosition);
 
                     if (capturedPiece != (char)ePlayerPieceType.Empty
-                        && capturedPiece != GetCurrentPlayerPiece())
+                        && !isPlayerPiece(capturedPosition))
+                        //capturedPiece != GetCurrentPlayerPiece()) 
                     {
+                        // m_CurrentPlayer
                         isCapturingMove = true;
                     }
                 }
@@ -361,40 +386,27 @@ namespace Ex02
             return isMoveValid;
         }
 
-        //public void MakeMove(MovePiece i_PlayerMove)
-        //{
-        //    // bool isCaptureMove = m_CaptureMoves.Count == 0;// IsCaptureAvailable(i_PlayerMove);
-
-        //    if (isCaptureMove)
-        //    {
-        //        m_GameBoard.CapturePiece(i_PlayerMove);
-        //    }
-        //    else
-        //    {
-        //        switchTurn();
-        //    }
-
-        //    m_GameBoard.MovePlayerPiece(i_PlayerMove);
-        //}
-
         public void MakeMove(MovePiece i_PlayerMove, bool i_IsCapture)
         {
             if (i_IsCapture) 
             {
                 m_GameBoard.CapturePiece(i_PlayerMove);
-                m_GameBoard.MovePlayerPiece(i_PlayerMove);
+                // m_GameBoard.MovePlayerPiece(i_PlayerMove);
 
                 m_LastMovePosition = i_PlayerMove.ToPosition;
 
-                m_CaptureMoves.Clear();
+                CaptureMoves.Clear();
 
                 addMovesToList(i_PlayerMove.ToPosition, GetPieceAtPosition(m_LastMovePosition), i_IsCapture);
-                //addMovesToList(i_PlayerMove.ToPosition, GetPieceAtPosition(i_PlayerMove.ToPosition), i_IsCapture);
 
-                if (m_CaptureMoves.Count == 0)
+                if (CaptureMoves.Count == 0)
                 {
                     m_LastMovePosition = null;
                     switchTurn();
+                }
+                else
+                {
+                    NextPlayer = CurrentPlayer; //check that works
                 }
             }
             else
@@ -403,12 +415,69 @@ namespace Ex02
                 m_LastMovePosition = null;
                 switchTurn();
             }
+        }
 
-            if (i_PlayerMove.ToPosition.Row == m_BoardSize - 1)
+        public void UpdateScore(ePlayerNumber i_WinningPlayer)
+        {
+            int player1Value = calculatePiecesValue(ePlayerNumber.Player1);
+            int player2Value = calculatePiecesValue(ePlayerNumber.Player2);
+            int scoreDifference = Math.Abs(player2Value - player1Value);
+
+            if (i_WinningPlayer == ePlayerNumber.Player1)
             {
-                m_GameBoard.MakeKing(i_PlayerMove.ToPosition);
+                m_Player1Score += scoreDifference;
             }
-            // TODO: Refactor to prevent using MovePlayerPiece twice.
+            else
+            {
+                m_Player2Score += scoreDifference;
+            }
+        }
+
+        private int calculatePiecesValue(ePlayerNumber i_PlayerNumber)
+        {
+            int totalPiecesValue = 0;
+            List<PiecePosition> playerPieces = m_GameBoard.GetPiecesPositionsList(i_PlayerNumber);
+
+            foreach (PiecePosition piecePosition in playerPieces)
+            {
+                char currentPiece = m_GameBoard.GetPieceAtPosition(piecePosition);
+                if (IsPieceKing(currentPiece))
+                {
+                    totalPiecesValue += r_KingValue;
+                }
+                else
+                {
+                    totalPiecesValue += r_RegularValue;
+                }
+            }
+
+            return totalPiecesValue;
+        }
+
+        public bool IsGameOver()
+        {
+            // TODO: Check if no valid moves or no remaining pieces or player has quit
+            return hasNoRemainingPieces() || hasNoValidMoves();
+        }
+
+        private bool hasNoValidMoves()
+        {
+            GetValidMoves();
+
+            return m_CaptureMoves.Count == 0 && m_RegularMoves.Count == 0;
+        }
+
+        private void isWinning()
+        {
+
+        }
+
+        private bool hasNoRemainingPieces()
+        {
+            List<PiecePosition> playerPiecesList = m_GameBoard.GetPiecesPositionsList(m_CurrentPlayer);
+            bool hasNoPieces = playerPiecesList.Count == 0;
+
+            return hasNoPieces;
         }
     }
 }

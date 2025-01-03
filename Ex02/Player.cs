@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Ex02
+﻿namespace Ex02
 {
     public class Player
     {
@@ -12,36 +10,18 @@ namespace Ex02
         public string Name
         {
             get { return m_PlayerName; }
+            set { m_PlayerName = value; }
         }
 
         public ePlayerPieceType PieceType
         {
-            get
-            {
-                return m_PlayerPiece;
-            }
-            private set
-            {
-                m_PlayerPiece = value;
-            }
+            get { return m_PlayerPiece; }
+            private set { m_PlayerPiece = value; }
         }
-
+        
         public ePlayerNumber PlayerNumber
         {
             get { return m_PlayerNumber; }
-        }
-
-        public Player(string i_PlayerName)
-        {
-            m_PlayerName = i_PlayerName;
-            PieceType = m_PlayerNumber == ePlayerNumber.Player1 ? ePlayerPieceType.OPlayer : ePlayerPieceType.XPlayer;
-        }
-
-        public void PlayerKingPiece()
-        {
-            PieceType = PieceType == ePlayerPieceType.OPlayer
-                            ? ePlayerPieceType.OPlayerKing
-                            : ePlayerPieceType.XPlayerKing;
         }
 
         public enum ePlayerPieceType
@@ -63,6 +43,12 @@ namespace Ex02
         {
             Player1 = 1,
             Player2 = 2
+        }
+
+        public Player(string i_PlayerName)
+        {
+            Name = i_PlayerName;
+            PieceType = m_PlayerNumber == ePlayerNumber.Player1 ? ePlayerPieceType.OPlayer : ePlayerPieceType.XPlayer;
         }
 
         public static bool IsPlayerNameValid(string i_PlayerName)
@@ -99,17 +85,25 @@ namespace Ex02
             return userChoice;
         }
 
-        public bool IsPieceBelongToCurrentPlayer(char i_PlayerPiece)
-        {
-            bool isPieceOwner = i_PlayerPiece == (char)PieceType;
+        //public bool IsPieceBelongToCurrentPlayer(char i_PlayerPiece)
+        //{
+        //    bool isPieceOwner = i_PlayerPiece == (char)PieceType;
 
-            return isPieceOwner;
-        }
+        //    return isPieceOwner;
+        //}
 
-        public char GetPiece()
-        {
-            return (char)PieceType;
-        }
+        //public void PlayerKingPiece()
+        //{
+        //    PieceType = PieceType == ePlayerPieceType.OPlayer
+        //                    ? ePlayerPieceType.OPlayerKing
+        //                    : ePlayerPieceType.XPlayerKing;
+        //}
+
+        //public char GetPiece()
+        //{
+        //    return (char)PieceType;
+        //}
+
     }
-        
+    
 }

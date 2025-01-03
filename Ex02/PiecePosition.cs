@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Ex02
+﻿namespace Ex02
 {
     public class PiecePosition
     {
@@ -25,8 +23,6 @@ namespace Ex02
             Col = i_Col;
         }
 
-        // TODO: argue with ido about the names in isEqualPosition
-        // TODO: Erase the above todo.
         public static bool IsEqualPosition(PiecePosition i_FromPosition, PiecePosition i_ToPosition)
         {
             return i_FromPosition.Row == i_ToPosition.Row && i_FromPosition.Col == i_ToPosition.Col;

@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace Ex02
+﻿namespace Ex02
 {
+    // TODO: Check if m_PlayerPieces is empty or no valid moves, then the player loses.
     public class GameSettings
     {
         private GameBoard m_GameBoard;
@@ -42,8 +41,8 @@ namespace Ex02
         public static GameSettings CreateNewGame()
         {
             ConsoleUI ui = new ConsoleUI(null);
-            return ui.GetGameSettings();
 
+            return ui.GetGameSettings();
         }
         
     }

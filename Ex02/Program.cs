@@ -1,8 +1,4 @@
-﻿using System;
-using static Ex02.ConsoleUI;
-
-
-namespace Ex02
+﻿namespace Ex02
 {
     public class Program
     {
@@ -16,9 +12,10 @@ namespace Ex02
             {   
                 ui.DisplayGameBoard();
                 
-                ui.PlayerMove();
+                //ui.PlayerMove();
                 // ui.ClearScreen();
             }
         }
     }
 }
+

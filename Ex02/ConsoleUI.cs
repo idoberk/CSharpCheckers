@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Text;
 using Ex02.ConsoleUtils;
+using static Ex02.Player;
 
 namespace Ex02
 {
-
     // TODO: Try to optimize the code (PrintGameBoard).
-    // TODO: Consider refactoring the code to print without a StringBuilder.
-    // TODO: Refactor PlayerMove
     public class ConsoleUI
     {
         private readonly Game r_Game;
@@ -24,7 +22,7 @@ namespace Ex02
             int boardSize = getBoardSize();
             int gameMode = getPlayerType();
             string player2Name = gameMode == (int)GameSettings.eGameMode.PlayerVsPlayer ? getName() : "Computer";
-            
+
             return new GameSettings(gameMode, boardSize, player1Name, player2Name);
         }
 
@@ -121,15 +119,19 @@ namespace Ex02
             displayColumnHeaders();
             // displayRows(board);
             // displayCurrentPlayerTurn(consoleBoard);
-            displayCurrentPlayerTurn();
+            // displayCurrentPlayerTurn();
             // Console.Write(consoleBoard.ToString());
             // Console.Write(PlayerMove(consoleBoard));
             // PlayerMove();
             //Console.Write(PlayerMove());
+            // displayPreviousMove();
+            displayCurrentPlayerTurn();
+            PlayerMove();
         }
 
         private void displayCurrentPlayerTurn() //StringBuilder i_ConsoleBoard)
         {
+            //displayPreviousMove(m_PlayedMove);//Added
             string currentPlayer = r_Game.GetCurrentPlayer();
             char currentPlayerPiece = r_Game.GetCurrentPlayerPiece();
 
@@ -137,12 +139,21 @@ namespace Ex02
             // i_ConsoleBoard.Append($"{currentPlayer}'s turn ({currentPlayerPiece}): ");
         }
 
-        private void displayPreviousMove(ref MovePiece io_PlayerPiece) //, StringBuilder i_ConsoleBoard)
+        private void displayPreviousMove(string i_PlayedMove) //, StringBuilder i_ConsoleBoard)
         {
-            char currentPlayerPiece = r_Game.GetCurrentPlayerPiece();
+            if (i_PlayedMove != string.Empty)
+            {
+                char currentPlayerPiece = r_Game.GetCurrentPlayerPiece();
+                string currentPlayer = r_Game.GetCurrentPlayer();
 
-            // displayCurrentPlayerTurn(i_ConsoleBoard);
-            displayCurrentPlayerTurn();
+                //string nextPlayer = currentPlayer == r_Game. ? Player1Name : Player2Name;
+                //char currentPlayerPiece = r_Game.GetCurrentPlayerPiece();
+
+
+                Console.WriteLine($"{currentPlayer}'s move was ({currentPlayerPiece}): {i_PlayedMove}");
+                // displayCurrentPlayerTurn(i_ConsoleBoard);
+                // displayCurrentPlayerTurn();
+            }
         }
 
         private void displayInnerCells(int i_BoardSize, int i) //, StringBuilder i_ConsoleBoard)
@@ -226,7 +237,7 @@ namespace Ex02
         public void PlayerMove() //StringBuilder i_ConsoleBoard)
         {
             bool isTurnFinished = false;
-
+            
             while (!isTurnFinished)
             {
                 string playerMoveInput = Console.ReadLine();
@@ -240,7 +251,7 @@ namespace Ex02
                         {
                             isTurnFinished = true;
                         }
-                        DisplayGameBoard();
+                        //DisplayGameBoard();
                     }
                     else
                     {
@@ -253,50 +264,6 @@ namespace Ex02
                 }
             }
         }
-
-        //public void PlayerMove() //StringBuilder i_ConsoleBoard)
-        //{
-        //    r_Game.GetValidMoves();
-        //    bool moveExecuted = false;
-
-        //    while (!moveExecuted)
-        //    {
-        //        string playerMoveInput = Console.ReadLine();
-        //        MovePiece moveAttempt = null;
-        //        if (!IsValidTurnFormat(playerMoveInput, ref moveAttempt))
-        //        {
-        //            Console.WriteLine("Invalid input. Please try again in the following format: (e.g., 'Fg>Eh'): ");
-        //            continue;
-        //        }
-
-
-        //        bool isCaptureMoveAvailable = moveAttempt.IsMoveInList(moveAttempt, r_Game.CaptureMoves);
-        //        bool isRegularMoveAvailable = moveAttempt.IsMoveInList(moveAttempt, r_Game.RegularMoves);
-        //        int availableCaptureMoves = r_Game.CaptureMoves.Count;
-
-        //        if (availableCaptureMoves > 0)
-        //        {
-        //            if (isCaptureMoveAvailable)
-        //            {
-        //                r_Game.MakeMove(moveAttempt, isCaptureMoveAvailable);
-        //                moveExecuted = true;
-        //            }
-        //            // Console.WriteLine("Invalid move.");
-        //            // isFormatValid = false;
-        //            // continue;
-        //        }
-        //        else if (isRegularMoveAvailable)
-        //        {
-        //            r_Game.MakeMove(moveAttempt, isCaptureMoveAvailable);
-        //            moveExecuted = true;
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("Invalid move.");
-        //        }
-        //        // isMoveValid = true;
-        //    }
-        //}
 
         public bool IsValidTurnFormat(string i_UserTurnInput, ref MovePiece io_playerPiece)
         {
