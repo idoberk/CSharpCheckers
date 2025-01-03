@@ -6,19 +6,19 @@ namespace Ex02
 {
     public class Program
     {
-        static void Main()
+        public static void Main()
         {
             GameSettings settings = GameSettings.CreateNewGame();
             Game game = new Game(settings);
             ConsoleUI ui = new ConsoleUI(game);
-            //ui.DisplayGameBoard(settings.Board.GetBoardSize);
-            for (int i = 0; i < 3; i++)
+
+            for (int i = 0; i < 100; i++)
             {   
                 ui.DisplayGameBoard();
+                
+                ui.PlayerMove();
                 // ui.ClearScreen();
             }
-
-            Console.ReadLine();
         }
     }
 }

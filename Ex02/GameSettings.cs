@@ -9,6 +9,14 @@ namespace Ex02
         private Player m_Player1;
         private Player m_Player2;
 
+        public GameSettings(int i_GameMode, int i_BoardSize, string i_Player1, string i_Player2)
+        {
+            m_GameMode = i_GameMode;
+            m_GameBoard = new GameBoard(i_BoardSize);
+            m_Player1 = new Player(i_Player1);
+            m_Player2 = new Player(i_Player2);
+        }
+
         public enum eGameMode
         {
             PlayerVsPlayer = 1,
@@ -37,13 +45,6 @@ namespace Ex02
             return ui.GetGameSettings();
 
         }
-
-        public GameSettings(int i_GameMode, int i_BoardSize, string i_Player1, string i_Player2)
-        {
-            m_GameMode = i_GameMode;
-            m_GameBoard = new GameBoard(i_BoardSize);
-            m_Player1 = new Player(i_Player1);
-            m_Player2 = new Player(i_Player2);
-        }
+        
     }
 }

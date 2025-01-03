@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Ex02.Player;
 
 namespace Ex02
 {
@@ -7,6 +8,8 @@ namespace Ex02
     {
         private char[,] m_Board;
         private readonly int r_BoardSize;
+        private List<PiecePosition> m_Player1Pieces;
+        private List<PiecePosition> m_Player2Pieces;
 
         private enum eBoardSize
         {
@@ -19,6 +22,8 @@ namespace Ex02
         {
             r_BoardSize = i_GameBoardSize;
             m_Board = new char[r_BoardSize, r_BoardSize];
+            m_Player1Pieces = new List<PiecePosition>();
+            m_Player2Pieces = new List<PiecePosition>();
 
             initializeBoard();
         }
@@ -26,6 +31,11 @@ namespace Ex02
         public int GetBoardSize
         {
             get { return r_BoardSize; }
+        }
+
+        public List<PiecePosition> GetPiecesPositionsList(ePlayerNumber i_PlayerNumber)
+        {
+            return i_PlayerNumber == ePlayerNumber.Player1 ? new List<PiecePosition>(m_Player1Pieces) : new List<PiecePosition>(m_Player2Pieces);
         }
 
         public char GetPieceAtPosition(PiecePosition i_PiecePosition)
@@ -44,6 +54,7 @@ namespace Ex02
                     if ((i + j) % 2 == 1)
                     {
                         m_Board[i, j] = (char)Player.ePlayerPieceType.OPlayer;
+                        m_Player1Pieces.Add(new PiecePosition(i, j));
                     }
                     else
                     {
@@ -67,6 +78,7 @@ namespace Ex02
                     if ((i + j) % 2 == 1)
                     {
                         m_Board[i, j] = (char)Player.ePlayerPieceType.XPlayer;
+                        m_Player2Pieces.Add(new PiecePosition(i, j));
                     }
                     else
                     {
@@ -101,29 +113,60 @@ namespace Ex02
 
         public void MovePlayerPiece(MovePiece i_MovePiece)
         {
-            m_Board[i_MovePiece.ToPosition.Row, i_MovePiece.ToPosition.Col] = m_Board[i_MovePiece.FromPosition.Row, i_MovePiece.FromPosition.Col];
-            m_Board[i_MovePiece.FromPosition.Row, i_MovePiece.FromPosition.Col] = (char)Player.ePlayerPieceType.Empty;
+            char piece = GetPieceAtPosition(i_MovePiece.FromPosition);
 
+            m_Board[i_MovePiece.ToPosition.Row, i_MovePiece.ToPosition.Col] = m_Board[i_MovePiece.FromPosition.Row, i_MovePiece.FromPosition.Col];
+            m_Board[i_MovePiece.FromPosition.Row, i_MovePiece.FromPosition.Col] = (char)ePlayerPieceType.Empty;
+
+            UpdatePiecePosition(i_MovePiece.FromPosition, i_MovePiece.ToPosition, piece);
         }
 
-        public List<MovePiece> GetValidMoves(PiecePosition i_PiecePosition, Player i_CurrentPlayer)
+        public void UpdatePiecePosition(PiecePosition i_FromPosition, PiecePosition i_ToPosition, char i_Piece) 
         {
-            List<MovePiece> validMoves = new List<MovePiece>();
-            char currentPlayerPiece = (char)i_CurrentPlayer.PieceType;
+            List<PiecePosition> updatedList = i_Piece == (char)ePlayerPieceType.OPlayer ? m_Player1Pieces : m_Player2Pieces;
 
-            if (currentPlayerPiece == ' ' || currentPlayerPiece != GetPieceAtPosition(i_PiecePosition))
+            for (int i = 0; i < updatedList.Count; i++)
             {
-                validMoves = null;
+                if (PiecePosition.IsEqualPosition(updatedList[i], i_FromPosition))
+                {
+                    updatedList[i] = i_ToPosition;
+                    break;
+                }
             }
+        }
 
-            return validMoves;
+        public void MakeKing(PiecePosition i_PiecePosition)
+        {
+            char i_Piece = GetPieceAtPosition(i_PiecePosition);
+
+            m_Board[i_PiecePosition.Row, i_PiecePosition.Col] =
+                i_Piece == (char)ePlayerPieceType.OPlayer
+                    ? (char)ePlayerPieceType.OPlayerKing
+                    : (char)ePlayerPieceType.XPlayerKing;
+        }
+
+        public void RemovePiecePosition(PiecePosition i_Position, char i_Piece)
+        {
+            List<PiecePosition> updatedList = i_Piece == (char)Player.ePlayerPieceType.OPlayer ? m_Player1Pieces : m_Player2Pieces;
+
+            for (int i = updatedList.Count - 1; i >= 0; i--)
+            {
+                if (PiecePosition.IsEqualPosition(updatedList[i], i_Position))
+                {
+                    updatedList.RemoveAt(i);
+                    break;
+                }
+            }
         }
 
         public void CapturePiece(MovePiece i_MovePiece)
         {
             int middleRow = (i_MovePiece.FromPosition.Row + i_MovePiece.ToPosition.Row) / 2;
             int middleCol = (i_MovePiece.FromPosition.Col + i_MovePiece.ToPosition.Col) / 2;
+            PiecePosition capturedPiecePosition = new PiecePosition(middleRow, middleCol);
+            char capturedPiece = m_Board[middleRow, middleCol];
 
+            RemovePiecePosition(capturedPiecePosition, capturedPiece);
             m_Board[middleRow, middleCol] = (char)Player.ePlayerPieceType.Empty;
         }
 
@@ -136,15 +179,15 @@ namespace Ex02
                 isValid = false;
             }
 
-            if (isValid && GetPieceAtPosition(i_MovePiece.ToPosition) != (char)Player.ePlayerPieceType.Empty)
-            {
-                isValid = false;
-            }
+            //if (isValid && GetPieceAtPosition(i_MovePiece.ToPosition) != (char)ePlayerPieceType.Empty)
+            //{
+            //    isValid = false;
+            //}
 
-            if (isValid && !IsValidMoveDistance(i_MovePiece.FromPosition, i_MovePiece.ToPosition))
-            {
-                isValid = false;
-            }
+            //if (isValid && !IsValidMoveDistance(i_MovePiece.FromPosition, i_MovePiece.ToPosition))
+            //{
+            //    isValid = false;
+            //}
 
             if (isValid && !IsPositionAvailable(i_MovePiece.ToPosition))
             {
@@ -156,7 +199,6 @@ namespace Ex02
 
         public bool IsMoveInBoundaries(PiecePosition i_FromPosition, PiecePosition i_ToPosition)
         {
-
             bool isFromRowMoveValid = i_FromPosition.Row >= 0 && i_FromPosition.Row < GetBoardSize;
             bool isFromColMoveValid = i_FromPosition.Col >= 0 && i_FromPosition.Col < GetBoardSize;
             bool isToRowMoveValid = i_ToPosition.Row >= 0 && i_ToPosition.Row < GetBoardSize;
@@ -165,18 +207,17 @@ namespace Ex02
             return isFromRowMoveValid && isFromColMoveValid && isToRowMoveValid && isToColMoveValid;
         }
 
-        public bool IsValidMoveDistance(PiecePosition i_FromPosition, PiecePosition i_ToPosition)
-        {
-            int moveDistance = Math.Abs(i_ToPosition.Row - i_FromPosition.Row);
-            bool isValidDistance = moveDistance == 1;
+        //public bool IsValidMoveDistance(PiecePosition i_FromPosition, PiecePosition i_ToPosition)
+        //{
+        //    int moveDistance = Math.Abs(i_ToPosition.Row - i_FromPosition.Row);
+        //    bool isValidDistance = moveDistance == 1;
 
-            return isValidDistance;
-        }
+        //    return isValidDistance;
+        //}
 
         public bool IsPositionAvailable(PiecePosition i_ToPosition)
         {
             return GetPieceAtPosition(i_ToPosition) == (char)Player.ePlayerPieceType.Empty;
         }
-
     }
 }

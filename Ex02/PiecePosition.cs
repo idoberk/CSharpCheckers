@@ -24,5 +24,12 @@ namespace Ex02
             Row = i_Row;
             Col = i_Col;
         }
+
+        // TODO: argue with ido about the names in isEqualPosition
+        // TODO: Erase the above todo.
+        public static bool IsEqualPosition(PiecePosition i_FromPosition, PiecePosition i_ToPosition)
+        {
+            return i_FromPosition.Row == i_ToPosition.Row && i_FromPosition.Col == i_ToPosition.Col;
+        }
     }
 }

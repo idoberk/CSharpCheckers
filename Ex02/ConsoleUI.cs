@@ -7,15 +7,14 @@ namespace Ex02
 
     // TODO: Try to optimize the code (PrintGameBoard).
     // TODO: Consider refactoring the code to print without a StringBuilder.
+    // TODO: Refactor PlayerMove
     public class ConsoleUI
     {
-        private readonly StringBuilder r_Board;
         private readonly Game r_Game;
 
         public ConsoleUI(Game i_Game)
         {
             r_Game = i_Game;
-            r_Board = new StringBuilder();
         }
 
         public GameSettings GetGameSettings()
@@ -115,30 +114,38 @@ namespace Ex02
 
         public void DisplayGameBoard()
         {
-            // ClearScreen();
+            // StringBuilder consoleBoard = new StringBuilder();
+            // ClearScreen(consoleBoard);
+            ClearScreen();
+            // displayColumnHeaders(consoleBoard);
             displayColumnHeaders();
-            displayRows();
+            // displayRows(board);
+            // displayCurrentPlayerTurn(consoleBoard);
             displayCurrentPlayerTurn();
-            Console.Write(r_Board.ToString());
-            Console.Write(PlayerMove());
+            // Console.Write(consoleBoard.ToString());
+            // Console.Write(PlayerMove(consoleBoard));
+            // PlayerMove();
+            //Console.Write(PlayerMove());
         }
 
-        private void displayCurrentPlayerTurn()
+        private void displayCurrentPlayerTurn() //StringBuilder i_ConsoleBoard)
         {
             string currentPlayer = r_Game.GetCurrentPlayer();
             char currentPlayerPiece = r_Game.GetCurrentPlayerPiece();
 
-            r_Board.Append($"{currentPlayer}'s turn ({currentPlayerPiece}): ");
+            Console.Write($"{currentPlayer}'s turn ({currentPlayerPiece}): ");
+            // i_ConsoleBoard.Append($"{currentPlayer}'s turn ({currentPlayerPiece}): ");
         }
 
-        private void displayPreviousMove(ref MovePiece io_PlayerPiece)
+        private void displayPreviousMove(ref MovePiece io_PlayerPiece) //, StringBuilder i_ConsoleBoard)
         {
             char currentPlayerPiece = r_Game.GetCurrentPlayerPiece();
 
+            // displayCurrentPlayerTurn(i_ConsoleBoard);
             displayCurrentPlayerTurn();
         }
 
-        private void displayInnerCells(int i_BoardSize, int i)
+        private void displayInnerCells(int i_BoardSize, int i) //, StringBuilder i_ConsoleBoard)
         {
             int boardSquareSize = 3;
 
@@ -148,87 +155,148 @@ namespace Ex02
 
                 if (getPieceType == '\0')
                 {
-                    r_Board.Append(new string(' ', boardSquareSize));
+                    string spaces = new string(' ', boardSquareSize);
+                    Console.Write(spaces);
+                    // i_ConsoleBoard.Append(new string(' ', boardSquareSize));
                 }
                 else
                 {
-                    r_Board.Append(' ').Append(getPieceType).Append(' ');
+                    Console.Write($" {getPieceType} ");
+                    //i_ConsoleBoard.Append(' ').Append(getPieceType).Append(' ');
                 }
-
-                r_Board.Append('|');
+                Console.Write('|');
+                //i_ConsoleBoard.Append('|');
             }
-
-            r_Board.AppendLine();
+            Console.WriteLine();
+            //i_ConsoleBoard.AppendLine();
         }
 
-        private void displayRows()
+        private void displayRows()//StringBuilder i_ConsoleBoard)
         {
             int boardSize = r_Game.Board.GetBoardSize;
             
             for (int i = 0; i < boardSize; i++)
             {
                 displayRowSeparators(boardSize);
-                r_Board.Append($"{(char)('A' + i)}").Append("|");
+                //displayRowSeparators(boardSize, i_ConsoleBoard);
+                Console.Write($"{(char)('A' + i)}|");
+                //i_ConsoleBoard.Append($"{(char)('A' + i)}").Append("|");
+                // displayInnerCells(boardSize, i, i_ConsoleBoard);
                 displayInnerCells(boardSize, i);
             }
 
             displayRowSeparators(boardSize);
-            r_Board.AppendLine();
+            Console.WriteLine();
+            //i_ConsoleBoard.AppendLine();
         }
 
-        private void displayRowSeparators(int i_BoardSize)
+        private void displayRowSeparators(int i_BoardSize) //, StringBuilder i_ConsoleBoard)
         {
-            r_Board.Append(' ').Append(new string('=', 4 * i_BoardSize + 1)).AppendLine();
+            string separators = new string('=', 4 * i_BoardSize + 1);
+            Console.WriteLine($" {separators}");
+            // i_ConsoleBoard.Append(' ').Append(new string('=', 4 * i_BoardSize + 1)).AppendLine();
         }
 
-        private void printSpaces()
+        private void printSpaces() //StringBuilder i_ConsoleBoard)
         {
-            r_Board.Append(new string(' ', 3));
+            string spaces = new string(' ', 3);
+            Console.Write(spaces);
+            // i_ConsoleBoard.Append(new string(' ', 3));
         }
 
-        private void displayColumnHeaders()
+        private void displayColumnHeaders() //StringBuilder i_ConsoleBoard)
         {
-
             printSpaces();
+            //printSpaces(i_ConsoleBoard);
             for (int i = 0; i < r_Game.Board.GetBoardSize; i++)
             {
-                r_Board.Append($"{(char)('a' + i)}");
+                Console.Write($"{(char)('a' + i)}");
+                // i_ConsoleBoard.Append($"{(char)('a' + i)}");
                 printSpaces();
+                //printSpaces(i_ConsoleBoard);
             }
             printSpaces();
-            r_Board.AppendLine();
+            //printSpaces(i_ConsoleBoard);
+            Console.WriteLine();
+            // i_ConsoleBoard.AppendLine();
+            displayRows();
+            //displayRows(i_ConsoleBoard);
         }
 
-        public MovePiece PlayerMove()
+        public void PlayerMove() //StringBuilder i_ConsoleBoard)
         {
-            string playerMove = string.Empty;
-            MovePiece playerPiece = null;
-            bool isFormatValid = false;
-            bool isMoveValid = false;
+            bool isTurnFinished = false;
 
-            while (!isFormatValid && !isMoveValid)
+            while (!isTurnFinished)
             {
-                playerMove = Console.ReadLine();
-                if (!IsValidTurnFormat(playerMove, ref playerPiece))
+                string playerMoveInput = Console.ReadLine();
+                MovePiece moveAttempt = null;
+
+                if (IsValidTurnFormat(playerMoveInput, ref moveAttempt))
+                {
+                    if (r_Game.IsMoveExecuted(moveAttempt))
+                    {
+                        if (!r_Game.HasCaptureMoves)
+                        {
+                            isTurnFinished = true;
+                        }
+                        DisplayGameBoard();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid move. Please try again.");
+                    }
+                }
+                else
                 {
                     Console.WriteLine("Invalid input. Please try again in the following format: (e.g., 'Fg>Eh'): ");
-                    continue;
                 }
-
-                isFormatValid = true;
-                if (!r_Game.IsMakeMove(playerPiece.FromPosition, playerPiece.ToPosition))
-                { 
-                  Console.WriteLine("Invalid move.");
-                  isFormatValid = false;
-                  continue;
-                }
-                isMoveValid = true;
             }
-
-            ClearScreen();
-            // displayPreviousMove(ref playerPiece);
-            return null;
         }
+
+        //public void PlayerMove() //StringBuilder i_ConsoleBoard)
+        //{
+        //    r_Game.GetValidMoves();
+        //    bool moveExecuted = false;
+
+        //    while (!moveExecuted)
+        //    {
+        //        string playerMoveInput = Console.ReadLine();
+        //        MovePiece moveAttempt = null;
+        //        if (!IsValidTurnFormat(playerMoveInput, ref moveAttempt))
+        //        {
+        //            Console.WriteLine("Invalid input. Please try again in the following format: (e.g., 'Fg>Eh'): ");
+        //            continue;
+        //        }
+
+
+        //        bool isCaptureMoveAvailable = moveAttempt.IsMoveInList(moveAttempt, r_Game.CaptureMoves);
+        //        bool isRegularMoveAvailable = moveAttempt.IsMoveInList(moveAttempt, r_Game.RegularMoves);
+        //        int availableCaptureMoves = r_Game.CaptureMoves.Count;
+
+        //        if (availableCaptureMoves > 0)
+        //        {
+        //            if (isCaptureMoveAvailable)
+        //            {
+        //                r_Game.MakeMove(moveAttempt, isCaptureMoveAvailable);
+        //                moveExecuted = true;
+        //            }
+        //            // Console.WriteLine("Invalid move.");
+        //            // isFormatValid = false;
+        //            // continue;
+        //        }
+        //        else if (isRegularMoveAvailable)
+        //        {
+        //            r_Game.MakeMove(moveAttempt, isCaptureMoveAvailable);
+        //            moveExecuted = true;
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("Invalid move.");
+        //        }
+        //        // isMoveValid = true;
+        //    }
+        //}
 
         public bool IsValidTurnFormat(string i_UserTurnInput, ref MovePiece io_playerPiece)
         {
@@ -262,9 +330,9 @@ namespace Ex02
             return isTurnFormatValid;
         }
 
-        public void ClearScreen()
+        public void ClearScreen()//StringBuilder i_ConsoleBoard)
         {
-            r_Board.Clear();
+            //i_ConsoleBoard.Clear();
             Screen.Clear();
         }
     }

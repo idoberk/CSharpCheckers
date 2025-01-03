@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace Ex02
 {
     public class Player
@@ -17,8 +16,19 @@ namespace Ex02
 
         public ePlayerPieceType PieceType
         {
-            get { return m_PlayerPiece; }
-            private set { m_PlayerPiece = value; }
+            get
+            {
+                return m_PlayerPiece;
+            }
+            private set
+            {
+                m_PlayerPiece = value;
+            }
+        }
+
+        public ePlayerNumber PlayerNumber
+        {
+            get { return m_PlayerNumber; }
         }
 
         public Player(string i_PlayerName)
@@ -54,12 +64,20 @@ namespace Ex02
             Player1 = 1,
             Player2 = 2
         }
-        
+
         public static bool IsPlayerNameValid(string i_PlayerName)
         {
-            bool validPlayerName = i_PlayerName.Length <= sr_MaxPlayerNameLength && !(i_PlayerName.Contains(" ")) && i_PlayerName != string.Empty;
+            bool validPlayerName = i_PlayerName.Length <= sr_MaxPlayerNameLength && !(i_PlayerName.Contains(" "))
+                                   && i_PlayerName != string.Empty;
 
             return validPlayerName;
+        }
+
+        public static bool IsPieceKing(char i_Piece)
+        {
+            bool isKing = (i_Piece == (char)ePlayerPieceType.OPlayerKing || i_Piece == (char)ePlayerPieceType.XPlayerKing);
+
+            return isKing;
         }
 
         public static int IsPlayerTypeValid(string i_UserChoice)
@@ -93,4 +111,5 @@ namespace Ex02
             return (char)PieceType;
         }
     }
+        
 }
