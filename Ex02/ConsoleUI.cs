@@ -1,13 +1,10 @@
 ﻿using System;
 using Ex02.ConsoleUtils;
-using System.Collections.Generic;
 
 namespace Ex02
 {
     public class ConsoleUI
     {
-        private static readonly int sr_MaxPlayerNameLength = 20;
-
         public static void WelcomeMessage()
         {
             Console.WriteLine("Welcome!");
@@ -22,7 +19,7 @@ namespace Ex02
             while (!isValidName)
             {
                 playerName = Console.ReadLine();
-                bool nameIsValid = IsPlayerNameValid(playerName);
+                bool nameIsValid = Player.IsPlayerNameValid(playerName);
 
                 if (nameIsValid)
                 {
@@ -40,14 +37,6 @@ namespace Ex02
         public static string GetPlayerInput()
         {
             return Console.ReadLine();
-        }
-
-        public static bool IsPlayerNameValid(string i_PlayerName)
-        {
-            bool validPlayerName = i_PlayerName.Length <= sr_MaxPlayerNameLength && !(i_PlayerName.Contains(" "))
-                                   && i_PlayerName != string.Empty;
-
-            return validPlayerName;
         }
 
         public static int GetPlayerType()
@@ -126,7 +115,7 @@ namespace Ex02
             return boardSize;
         }
 
-        public static void DisplayGame(GameBoard i_GameBoard) //Player i_CurrentPlayer, Player i_NextPlayer, GameBoard i_GameBoard, List<MovePiece> i_CaptureMoves, bool i_IsGameOver)
+        public static void DisplayGame(GameBoard i_GameBoard)
         {
             ClearScreen();
             DisplayGameBoard(i_GameBoard);
@@ -147,7 +136,7 @@ namespace Ex02
         {
             if (i_CurrentPlayer.IsComputer())
             {
-                Console.Write($"{i_CurrentPlayer.Name}'s turn press 'enter' to see it's move: ");
+                Console.WriteLine($"{i_CurrentPlayer.Name}'s turn press 'enter' to see it's move: ");
             }
             else
             {
@@ -155,20 +144,9 @@ namespace Ex02
             }
         }
 
-        public static void DisplayPreviousPlayerMove(Player i_CurrentPlayer, Player i_NextPlayer, List<MovePiece> i_CaptureMoves)
+        public static void DisplayPreviousPlayerMove(Player i_CurrentPlayer)
         {
-            if (i_CurrentPlayer.LastMove != string.Empty)
-            {
-                //if (i_CaptureMoves.Count != 0)
-                //{
-                    Console.WriteLine($"{i_CurrentPlayer.Name}'s move was ({i_CurrentPlayer.PlayerPiece}): {i_CurrentPlayer.LastMove}");
-                //}
-                //else
-                //{
-                //    Console.WriteLine($"{i_NextPlayer.Name}'s move was ({i_NextPlayer.PlayerPiece}): {i_NextPlayer.LastMove}");
-                //}
-            }
-            // displayCurrentPlayerTurn(i_CurrentPlayer);
+            Console.WriteLine($"{i_CurrentPlayer.Name}'s move was ({i_CurrentPlayer.PlayerPiece}): {i_CurrentPlayer.LastMove}");
         }
 
         public static void DisplayGameBoard(GameBoard i_GameBoard)
@@ -279,6 +257,27 @@ namespace Ex02
             Console.WriteLine("Invalid move. Please try again.");
         }
 
+        public static bool IsAnotherGame()
+        {
+            DisplayAnotherGameMessage();
+
+            bool isAnotherGame = false;
+            string userInput = GetPlayerInput();
+
+            while (!userInput.Equals("Y") && !userInput.Equals("y") && !userInput.Equals("N") && !userInput.Equals("n"))
+            {
+                DisplayInvalidInputMessage();
+                userInput = GetPlayerInput();
+            }
+
+            if (userInput.Equals("Y") || userInput.Equals("y"))
+            {
+                isAnotherGame = true;
+            }
+
+            return isAnotherGame;
+        }
+
         public static void DisplayInvalidFormatMessage()
         {
             Console.WriteLine("Invalid input. Please try again in the following format: (e.g., 'Fg>Eh'): ");
@@ -297,7 +296,17 @@ namespace Ex02
 
         public static void DisplayAnotherGameMessage()
         {
-            Console.WriteLine("Would you like to play another game? Y/N");
+            Console.WriteLine("Would you like to play another game? (Y / N)");
+        }
+
+        public static void DisplayInvalidInputMessage()
+        {
+            Console.WriteLine("Invalid input. Please try again.");
+        }
+
+        public static void DisplayWinnerMessage(Player i_WinningPlayer)
+        {
+            Console.WriteLine($"Congratulations! {i_WinningPlayer.Name} won!");
         }
     }
 }

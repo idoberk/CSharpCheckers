@@ -46,29 +46,25 @@ namespace Ex02
             m_Player2 = new Player(player2Name, (char)ePlayerPieceType.XPlayer, (ePlayerType)player2Type, 2);
             m_NextPlayer = m_Player2;
             DisplayGame(m_GameBoard);
-            // DisplayGame(m_CurrentPlayer, m_NextPlayer, m_GameBoard, m_CaptureMoves, m_GameOver);
             DisplayCurrentPlayerTurn(m_CurrentPlayer);
             while (!isGameFinished)
             {
                 if (playerInput == "Q" || playerInput == "q" || m_GameOver)
                 {
                     m_GameOver = false;
-                    ClearScreen();
                     UpdateScore();
                     DisplayPlayerScores(m_Player1, m_Player2);
-                    DisplayAnotherGameMessage();
-                    playerInput = GetPlayerInput();
 
-                    if (!playerInput.Equals("Y"))
+                    if (!IsAnotherGame())
                     {
                         isGameFinished = true;
                     }
                     else
                     {
                         playerInput = string.Empty;
+                        ClearScreen();
                         resetGame();
                         DisplayGame(m_GameBoard);
-                        // DisplayGame(m_CurrentPlayer, m_NextPlayer, m_GameBoard, m_CaptureMoves, m_GameOver);
                         DisplayCurrentPlayerTurn(m_CurrentPlayer);
                     }
                 }
@@ -81,13 +77,12 @@ namespace Ex02
                         if (IsGameOver())
                         {
                             m_GameOver = true;
+                            DisplayWinnerMessage(m_NextPlayer);
                             break;
                         }
                         if (m_CurrentPlayer.IsComputer())
                         {
                             computerMove();
-                            //m_IsTurnFinished = !HasCaptureMoves;
-                            //DisplayGame(m_CurrentPlayer, m_NextPlayer, m_GameBoard, m_CaptureMoves, m_GameOver);
                         }
                         else
                         {
@@ -96,14 +91,12 @@ namespace Ex02
                             if (playerInput == "Q" || playerInput == "q")
                             {
                                 m_IsTurnFinished = true;
+                                DisplayWinnerMessage(m_NextPlayer);
                                 break;
                             }
 
                             playerMove(playerInput);
-                            //m_IsTurnFinished = !HasCaptureMoves;
                         }
-
-                        //DisplayGame(m_CurrentPlayer, m_NextPlayer, m_GameBoard, m_CaptureMoves, m_GameOver);
                     }
                 }
             }
@@ -168,7 +161,6 @@ namespace Ex02
                 {
                     m_LastMovePosition = null;
                     m_IsTurnFinished = true;
-                    // switchTurn();
                 }
             }
             else
@@ -177,17 +169,15 @@ namespace Ex02
                 m_LastMovePosition = null;
                 UpdateLastMove(parseMoveToString(i_PlayerMove));
                 m_IsTurnFinished = true;
-                // switchTurn();
             }
 
             DisplayGame(m_GameBoard);
-            DisplayPreviousPlayerMove(m_CurrentPlayer, m_NextPlayer, m_CaptureMoves);
+            DisplayPreviousPlayerMove(m_CurrentPlayer);
             if (m_IsTurnFinished)
             {
                 switchTurn();
             }
             DisplayCurrentPlayerTurn(m_CurrentPlayer);
-            //DisplayGame(m_CurrentPlayer, m_NextPlayer, m_GameBoard, m_CaptureMoves, m_GameOver);
         }
 
         public void UpdateLastMove(string i_PlayerMoveInput)
@@ -396,13 +386,6 @@ namespace Ex02
             Player temp = m_CurrentPlayer;
             m_CurrentPlayer = m_NextPlayer;
             m_NextPlayer = temp;
-
-            //m_CurrentPlayer = m_CurrentPlayer == m_Player1
-            //                    ? m_Player2
-            //                    : m_Player1;
-            //m_NextPlayer = m_NextPlayer == m_Player1
-            //                    ? m_Player2
-            //                    : m_Player1;
         }
 
         public void UpdateScore()
@@ -503,12 +486,6 @@ namespace Ex02
 
             string playerMoveInput = parseMoveToString(randomMove);
             PerformMove(randomMove, isCapture);
-            //if (m_IsTurnFinished)
-            //{
-            //    switchTurn();
-            //}
-            // m_IsTurnFinished = !HasCaptureMoves;
-            // UpdateLastMove(playerMoveInput);
         }
 
         private void playerMove(string i_PlayerMoveInput)
@@ -517,18 +494,8 @@ namespace Ex02
             {
                 if (!IsMoveExecuted(moveAttempt))
                 {
-                    //if (m_IsTurnFinished)
-                    //{
-                    //    switchTurn();
-                    //}
-                    // UpdateLastMove(i_PlayerMoveInput);
-                    // m_IsTurnFinished = !HasCaptureMoves;
-                    //DisplayGame(m_CurrentPlayer, m_NextPlayer, m_GameBoard, m_CaptureMoves, m_GameOver);
                     DisplayInvalidMoveMessage();
                 }
-                //else
-                //{
-                //}
             }
             else
             {

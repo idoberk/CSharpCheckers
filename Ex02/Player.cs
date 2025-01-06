@@ -2,6 +2,7 @@
 {
     public class Player
     {
+        private static readonly int sr_MaxPlayerNameLength = 20;
         private string m_PlayerName;
         private char m_PlayerPiece;
         private ePlayerType m_PlayerType;
@@ -70,6 +71,14 @@
             Computer = 2
         }
 
+        public static bool IsPlayerNameValid(string i_PlayerName)
+        {
+            bool validPlayerName = i_PlayerName.Length <= sr_MaxPlayerNameLength && !(i_PlayerName.Contains(" "))
+                                   && i_PlayerName != string.Empty;
+
+            return validPlayerName;
+        }
+
         public static bool IsPieceKing(char i_Piece)
         {
             bool isKing = (i_Piece == (char)ePlayerPieceType.OPlayerKing || i_Piece == (char)ePlayerPieceType.XPlayerKing);
@@ -86,7 +95,7 @@
 
         public bool IsComputer()
         {
-            return m_PlayerType == Player.ePlayerType.Computer;
+            return m_PlayerType == ePlayerType.Computer;
         }
     }
 }
