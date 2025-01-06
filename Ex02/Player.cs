@@ -2,10 +2,12 @@
 {
     public class Player
     {
-        private static readonly int sr_MaxPlayerNameLength = 20;
         private string m_PlayerName;
-        private ePlayerNumber m_PlayerNumber;
-        private ePlayerPieceType m_PlayerPiece;
+        private char m_PlayerPiece;
+        private ePlayerType m_PlayerType;
+        private int m_PlayerNumber;
+        private string m_LastMove;
+        private int m_Score = 0;
 
         public string Name
         {
@@ -13,15 +15,44 @@
             set { m_PlayerName = value; }
         }
 
-        public ePlayerPieceType PieceType
+        public char PlayerPiece
         {
             get { return m_PlayerPiece; }
-            private set { m_PlayerPiece = value; }
+            set { m_PlayerPiece = value; }
         }
-        
-        public ePlayerNumber PlayerNumber
+
+        public ePlayerType PlayerType
+        {
+            get { return m_PlayerType; }
+            set { m_PlayerType = value; }
+        }
+
+        public int Score
+        {
+            get { return m_Score; }
+            set { m_Score = value; }
+        }
+
+        public int PlayerNumber
         {
             get { return m_PlayerNumber; }
+            set { m_PlayerNumber = value; }
+        }
+
+        public string LastMove
+        {
+            get { return m_LastMove; }
+            set { m_LastMove = value; }
+        }
+
+        public Player(string i_PlayerName, char i_PlayerPiece, ePlayerType i_PlayerType, int i_PlayerNumber)
+        {
+            Name = i_PlayerName;
+            PlayerPiece = i_PlayerPiece;
+            PlayerType = i_PlayerType == ePlayerType.Human ? ePlayerType.Human : ePlayerType.Computer;
+            PlayerNumber = i_PlayerNumber;
+            Score = 0;
+            LastMove = string.Empty;
         }
 
         public enum ePlayerPieceType
@@ -39,26 +70,6 @@
             Computer = 2
         }
 
-        public enum ePlayerNumber
-        {
-            Player1 = 1,
-            Player2 = 2
-        }
-
-        public Player(string i_PlayerName)
-        {
-            Name = i_PlayerName;
-            PieceType = m_PlayerNumber == ePlayerNumber.Player1 ? ePlayerPieceType.OPlayer : ePlayerPieceType.XPlayer;
-        }
-
-        public static bool IsPlayerNameValid(string i_PlayerName)
-        {
-            bool validPlayerName = i_PlayerName.Length <= sr_MaxPlayerNameLength && !(i_PlayerName.Contains(" "))
-                                   && i_PlayerName != string.Empty;
-
-            return validPlayerName;
-        }
-
         public static bool IsPieceKing(char i_Piece)
         {
             bool isKing = (i_Piece == (char)ePlayerPieceType.OPlayerKing || i_Piece == (char)ePlayerPieceType.XPlayerKing);
@@ -66,44 +77,16 @@
             return isKing;
         }
 
-        public static int IsPlayerTypeValid(string i_UserChoice)
+        public void PlayerKingPiece()
         {
-            int userChoice = 0;
-
-            if (int.TryParse(i_UserChoice, out int playerType))
-            {
-                if (playerType == 1)
-                {
-                    userChoice = (int)ePlayerType.Human;
-                }
-                else if (playerType == 2)
-                {
-                    userChoice = (int)ePlayerType.Computer;
-                }
-            }
-
-            return userChoice;
+            PlayerPiece = PlayerPiece == (char)ePlayerPieceType.OPlayer
+                            ? (char)ePlayerPieceType.OPlayerKing
+                            : (char)ePlayerPieceType.XPlayerKing;
         }
 
-        //public bool IsPieceBelongToCurrentPlayer(char i_PlayerPiece)
-        //{
-        //    bool isPieceOwner = i_PlayerPiece == (char)PieceType;
-
-        //    return isPieceOwner;
-        //}
-
-        //public void PlayerKingPiece()
-        //{
-        //    PieceType = PieceType == ePlayerPieceType.OPlayer
-        //                    ? ePlayerPieceType.OPlayerKing
-        //                    : ePlayerPieceType.XPlayerKing;
-        //}
-
-        //public char GetPiece()
-        //{
-        //    return (char)PieceType;
-        //}
-
+        public bool IsComputer()
+        {
+            return m_PlayerType == Player.ePlayerType.Computer;
+        }
     }
-    
 }

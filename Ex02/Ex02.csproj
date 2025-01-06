@@ -36,9 +36,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game.cs" />
+    <Compile Include="GameManager.cs" />
     <Compile Include="GameBoard.cs" />
-    <Compile Include="GameSettings.cs" />
     <Compile Include="MovePiece.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PiecePosition.cs" />

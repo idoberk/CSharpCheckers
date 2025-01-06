@@ -7,7 +7,6 @@ namespace Ex02
         private PiecePosition m_FromPosition;
         private PiecePosition m_ToPosition;
 
-        
         public PiecePosition FromPosition
         {
             get { return m_FromPosition; }
@@ -22,17 +21,17 @@ namespace Ex02
 
         public MovePiece(PiecePosition i_FromPosition, PiecePosition i_ToPosition)
         {
-            m_FromPosition = i_FromPosition;
-            m_ToPosition = i_ToPosition;
+            FromPosition = i_FromPosition;
+            ToPosition = i_ToPosition;
         }
 
-        public bool IsMoveInList(MovePiece i_Move, List<MovePiece> i_MoveList)
+        public bool IsMoveInList(MovePiece i_MoveToCheck, List<MovePiece> i_MoveList)
         {
            bool isInList = false;
 
            foreach(MovePiece currentMove in i_MoveList)
            {
-                if(IsEqualMove(currentMove, i_Move))
+                if(IsEqualMove(currentMove, i_MoveToCheck))
                 {
                     isInList = true;
                     break;
@@ -42,9 +41,10 @@ namespace Ex02
            return isInList;
         }
 
-        public static bool IsEqualMove(MovePiece i_Move1, MovePiece i_Move2)
+        public static bool IsEqualMove(MovePiece i_FirstMove, MovePiece i_SecondMove)
         {
-            return PiecePosition.IsEqualPosition(i_Move1.FromPosition, i_Move2.FromPosition) && PiecePosition.IsEqualPosition(i_Move1.ToPosition, i_Move2.ToPosition);
+            return PiecePosition.IsEqualPosition(i_FirstMove.FromPosition, i_SecondMove.FromPosition)
+                && PiecePosition.IsEqualPosition(i_FirstMove.ToPosition, i_SecondMove.ToPosition);
         }
     }
 }

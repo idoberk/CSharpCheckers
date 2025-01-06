@@ -1,32 +1,56 @@
 ﻿using System;
-using System.Text;
 using Ex02.ConsoleUtils;
-using static Ex02.Player;
+using System.Collections.Generic;
 
 namespace Ex02
 {
-    // TODO: Try to optimize the code (PrintGameBoard).
     public class ConsoleUI
     {
-        private readonly Game r_Game;
+        private static readonly int sr_MaxPlayerNameLength = 20;
 
-        public ConsoleUI(Game i_Game)
-        {
-            r_Game = i_Game;
-        }
-
-        public GameSettings GetGameSettings()
+        public static void WelcomeMessage()
         {
             Console.WriteLine("Welcome!");
-            string player1Name = getName();
-            int boardSize = getBoardSize();
-            int gameMode = getPlayerType();
-            string player2Name = gameMode == (int)GameSettings.eGameMode.PlayerVsPlayer ? getName() : "Computer";
-
-            return new GameSettings(gameMode, boardSize, player1Name, player2Name);
         }
 
-        private int getPlayerType()
+        public static string GetPlayerName()
+        {
+            bool isValidName = false;
+            string playerName = string.Empty;
+
+            Console.WriteLine("Enter Player name (must be shorter than 20 characters and cannot contain spaces): ");
+            while (!isValidName)
+            {
+                playerName = Console.ReadLine();
+                bool nameIsValid = IsPlayerNameValid(playerName);
+
+                if (nameIsValid)
+                {
+                    isValidName = true;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid name, please try again.");
+                }
+            }
+
+            return playerName;
+        }
+
+        public static string GetPlayerInput()
+        {
+            return Console.ReadLine();
+        }
+
+        public static bool IsPlayerNameValid(string i_PlayerName)
+        {
+            bool validPlayerName = i_PlayerName.Length <= sr_MaxPlayerNameLength && !(i_PlayerName.Contains(" "))
+                                   && i_PlayerName != string.Empty;
+
+            return validPlayerName;
+        }
+
+        public static int GetPlayerType()
         {
             bool isValidChoice = false;
             string userInputChoice = string.Empty;
@@ -39,48 +63,41 @@ namespace Ex02
             while (!isValidChoice)
             {
                 userInputChoice = Console.ReadLine();
-                typeIsValid = Player.IsPlayerTypeValid(userInputChoice);
+                typeIsValid = IsPlayerTypeValid(userInputChoice);
 
-                // TODO: Change to a method if possible
                 if (typeIsValid != 0)
                 {
                     isValidChoice = true;
                 }
                 else
                 {
-                    Console.WriteLine("Invalid input, please try again.");
+                    Console.WriteLine("Invalid type input, please try again.");
                 }
             }
 
             return typeIsValid;
         }
 
-        private string getName()
+        public static int IsPlayerTypeValid(string i_UserChoice)
         {
-            bool isValidName = false;
-            string playerName = string.Empty;
+            int userChoice = 0;
 
-            Console.WriteLine("Enter Player name (must be shorter than 20 characters and cannot contain spaces): ");
-            while (!isValidName)
+            if (int.TryParse(i_UserChoice, out int playerType))
             {
-               playerName = Console.ReadLine();
-               bool nameIsValid = Player.IsPlayerNameValid(playerName);
-
-               // TODO: Change to a method if possible
-               if (nameIsValid)
-               {
-                   isValidName = true;
-               }
-               else
-               {
-                   Console.WriteLine("Invalid name, please try again.");
-               }
+                if (playerType == 1)
+                {
+                    userChoice = (int)Player.ePlayerType.Human;
+                }
+                else if (playerType == 2)
+                {
+                    userChoice = (int)Player.ePlayerType.Computer;
+                }
             }
 
-            return playerName;
+            return userChoice;
         }
 
-        private int getBoardSize()
+        public static int GetBoardSize()
         {
             bool isValidSize = false;
             string userInputGameSize = string.Empty;
@@ -94,178 +111,136 @@ namespace Ex02
             while (!isValidSize)
             {
                 userInputGameSize = Console.ReadLine();
-                boardSize = GameBoard.IsBoardSizeValid(userInputGameSize);
+                boardSize = GameBoard.SetBoardSize(userInputGameSize);
 
-                // TODO: Change to a method if possible
                 if (boardSize != 0)
                 {
                     isValidSize = true;
                 }
                 else
                 {
-                    Console.WriteLine("Invalid size, please try again.");
+                    Console.WriteLine("Invalid board size, please try again.");
                 }
             }
 
             return boardSize;
         }
 
-        public void DisplayGameBoard()
+        public static void DisplayGame(GameBoard i_GameBoard) //Player i_CurrentPlayer, Player i_NextPlayer, GameBoard i_GameBoard, List<MovePiece> i_CaptureMoves, bool i_IsGameOver)
         {
-            // StringBuilder consoleBoard = new StringBuilder();
-            // ClearScreen(consoleBoard);
             ClearScreen();
-            // displayColumnHeaders(consoleBoard);
-            displayColumnHeaders();
-            // displayRows(board);
-            // displayCurrentPlayerTurn(consoleBoard);
-            // displayCurrentPlayerTurn();
-            // Console.Write(consoleBoard.ToString());
-            // Console.Write(PlayerMove(consoleBoard));
-            // PlayerMove();
-            //Console.Write(PlayerMove());
-            // displayPreviousMove();
-            displayCurrentPlayerTurn();
-            PlayerMove();
+            DisplayGameBoard(i_GameBoard);
+
+            //if (!i_IsGameOver)
+            //{
+            //    displayPreviousPlayerMove(i_CurrentPlayer, i_NextPlayer, i_CaptureMoves);
+            //    displayCurrentPlayerTurn(i_CurrentPlayer);
+            //}
         }
 
-        private void displayCurrentPlayerTurn() //StringBuilder i_ConsoleBoard)
+        public static void ClearScreen()
         {
-            //displayPreviousMove(m_PlayedMove);//Added
-            string currentPlayer = r_Game.GetCurrentPlayer();
-            char currentPlayerPiece = r_Game.GetCurrentPlayerPiece();
-
-            Console.Write($"{currentPlayer}'s turn ({currentPlayerPiece}): ");
-            // i_ConsoleBoard.Append($"{currentPlayer}'s turn ({currentPlayerPiece}): ");
+            Screen.Clear();
         }
 
-        private void displayPreviousMove(string i_PlayedMove) //, StringBuilder i_ConsoleBoard)
+        public static void DisplayCurrentPlayerTurn(Player i_CurrentPlayer)
         {
-            if (i_PlayedMove != string.Empty)
+            if (i_CurrentPlayer.IsComputer())
             {
-                char currentPlayerPiece = r_Game.GetCurrentPlayerPiece();
-                string currentPlayer = r_Game.GetCurrentPlayer();
-
-                //string nextPlayer = currentPlayer == r_Game. ? Player1Name : Player2Name;
-                //char currentPlayerPiece = r_Game.GetCurrentPlayerPiece();
-
-
-                Console.WriteLine($"{currentPlayer}'s move was ({currentPlayerPiece}): {i_PlayedMove}");
-                // displayCurrentPlayerTurn(i_ConsoleBoard);
-                // displayCurrentPlayerTurn();
+                Console.Write($"{i_CurrentPlayer.Name}'s turn press 'enter' to see it's move: ");
+            }
+            else
+            {
+                Console.Write($"{i_CurrentPlayer.Name}'s turn ({i_CurrentPlayer.PlayerPiece}): ");
             }
         }
 
-        private void displayInnerCells(int i_BoardSize, int i) //, StringBuilder i_ConsoleBoard)
+        public static void DisplayPreviousPlayerMove(Player i_CurrentPlayer, Player i_NextPlayer, List<MovePiece> i_CaptureMoves)
+        {
+            if (i_CurrentPlayer.LastMove != string.Empty)
+            {
+                //if (i_CaptureMoves.Count != 0)
+                //{
+                    Console.WriteLine($"{i_CurrentPlayer.Name}'s move was ({i_CurrentPlayer.PlayerPiece}): {i_CurrentPlayer.LastMove}");
+                //}
+                //else
+                //{
+                //    Console.WriteLine($"{i_NextPlayer.Name}'s move was ({i_NextPlayer.PlayerPiece}): {i_NextPlayer.LastMove}");
+                //}
+            }
+            // displayCurrentPlayerTurn(i_CurrentPlayer);
+        }
+
+        public static void DisplayGameBoard(GameBoard i_GameBoard)
+        {
+            printSpaces();
+            displayColumnHeaders(i_GameBoard);
+            printSpaces();
+            displayRows(i_GameBoard);
+        }
+
+        private static void displayColumnHeaders(GameBoard i_GameBoard)
+        {
+            for (int i = 0; i < i_GameBoard.GetBoardSize; i++)
+            {
+                Console.Write($"{(char)('a' + i)}");
+                printSpaces();
+            }
+        }
+
+        private static void printSpaces()
+        {
+            string spaces = new string(' ', 3);
+
+            Console.Write(spaces);
+        }
+
+        private static void displayRows(GameBoard i_GameBoard)
+        {
+            int boardSize = i_GameBoard.GetBoardSize;
+
+            Console.WriteLine();
+            for (int i = 0; i < boardSize; i++)
+            {
+                displayRowSeparators(boardSize);
+                Console.Write($"{(char)('A' + i)}|");
+                displayInnerCells(boardSize, i, i_GameBoard);
+            }
+
+            displayRowSeparators(boardSize);
+            Console.WriteLine();
+        }
+
+        private static void displayRowSeparators(int i_BoardSize)
+        {
+            string separators = new string('=', 4 * i_BoardSize + 1);
+
+            Console.WriteLine($" {separators}");
+        }
+
+        private static void displayInnerCells(int i_BoardSize, int i, GameBoard i_GameBoard)
         {
             int boardSquareSize = 3;
 
             for (int j = 0; j < i_BoardSize; j++)
             {
-                char getPieceType = r_Game.GetPieceAtPosition(new PiecePosition(i, j));
+                char getPieceType = i_GameBoard.GetPieceAtPosition(new PiecePosition(i, j));
 
                 if (getPieceType == '\0')
                 {
                     string spaces = new string(' ', boardSquareSize);
                     Console.Write(spaces);
-                    // i_ConsoleBoard.Append(new string(' ', boardSquareSize));
                 }
                 else
                 {
                     Console.Write($" {getPieceType} ");
-                    //i_ConsoleBoard.Append(' ').Append(getPieceType).Append(' ');
                 }
                 Console.Write('|');
-                //i_ConsoleBoard.Append('|');
             }
             Console.WriteLine();
-            //i_ConsoleBoard.AppendLine();
         }
 
-        private void displayRows()//StringBuilder i_ConsoleBoard)
-        {
-            int boardSize = r_Game.Board.GetBoardSize;
-            
-            for (int i = 0; i < boardSize; i++)
-            {
-                displayRowSeparators(boardSize);
-                //displayRowSeparators(boardSize, i_ConsoleBoard);
-                Console.Write($"{(char)('A' + i)}|");
-                //i_ConsoleBoard.Append($"{(char)('A' + i)}").Append("|");
-                // displayInnerCells(boardSize, i, i_ConsoleBoard);
-                displayInnerCells(boardSize, i);
-            }
-
-            displayRowSeparators(boardSize);
-            Console.WriteLine();
-            //i_ConsoleBoard.AppendLine();
-        }
-
-        private void displayRowSeparators(int i_BoardSize) //, StringBuilder i_ConsoleBoard)
-        {
-            string separators = new string('=', 4 * i_BoardSize + 1);
-            Console.WriteLine($" {separators}");
-            // i_ConsoleBoard.Append(' ').Append(new string('=', 4 * i_BoardSize + 1)).AppendLine();
-        }
-
-        private void printSpaces() //StringBuilder i_ConsoleBoard)
-        {
-            string spaces = new string(' ', 3);
-            Console.Write(spaces);
-            // i_ConsoleBoard.Append(new string(' ', 3));
-        }
-
-        private void displayColumnHeaders() //StringBuilder i_ConsoleBoard)
-        {
-            printSpaces();
-            //printSpaces(i_ConsoleBoard);
-            for (int i = 0; i < r_Game.Board.GetBoardSize; i++)
-            {
-                Console.Write($"{(char)('a' + i)}");
-                // i_ConsoleBoard.Append($"{(char)('a' + i)}");
-                printSpaces();
-                //printSpaces(i_ConsoleBoard);
-            }
-            printSpaces();
-            //printSpaces(i_ConsoleBoard);
-            Console.WriteLine();
-            // i_ConsoleBoard.AppendLine();
-            displayRows();
-            //displayRows(i_ConsoleBoard);
-        }
-
-        public void PlayerMove() //StringBuilder i_ConsoleBoard)
-        {
-            bool isTurnFinished = false;
-            
-            while (!isTurnFinished)
-            {
-                string playerMoveInput = Console.ReadLine();
-                MovePiece moveAttempt = null;
-
-                if (IsValidTurnFormat(playerMoveInput, ref moveAttempt))
-                {
-                    if (r_Game.IsMoveExecuted(moveAttempt))
-                    {
-                        if (!r_Game.HasCaptureMoves)
-                        {
-                            isTurnFinished = true;
-                        }
-                        //DisplayGameBoard();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid move. Please try again.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid input. Please try again in the following format: (e.g., 'Fg>Eh'): ");
-                }
-            }
-        }
-
-        public bool IsValidTurnFormat(string i_UserTurnInput, ref MovePiece io_playerPiece)
+        public static bool IsValidTurnFormat(string i_UserTurnInput, out MovePiece o_playerPiece)
         {
             bool isTurnFormatValid = !i_UserTurnInput.Contains(">") || !string.IsNullOrWhiteSpace(i_UserTurnInput);
             string[] userInput = null;
@@ -277,7 +252,9 @@ namespace Ex02
             if (isTurnFormatValid)
             {
                 userInput = i_UserTurnInput.Split('>');
-                if (userInput.Length != 2 || userInput[0].Length != 2 || userInput[1].Length != 2)
+                if (userInput.Length != 2 || userInput[0].Length != 2 || userInput[1].Length != 2 ||
+                    !char.IsUpper(userInput[0][0]) || !char.IsUpper(userInput[1][0]) ||
+                    !char.IsLower(userInput[0][1]) || !char.IsLower(userInput[1][1]))
                 {
                     isTurnFormatValid = false;
                 }
@@ -292,15 +269,35 @@ namespace Ex02
 
             PiecePosition fromInput = new PiecePosition(fromRow, fromCol);
             PiecePosition toInput = new PiecePosition(toRow, toCol);
-            io_playerPiece = new MovePiece(fromInput, toInput);
+            o_playerPiece = new MovePiece(fromInput, toInput);
 
             return isTurnFormatValid;
         }
 
-        public void ClearScreen()//StringBuilder i_ConsoleBoard)
+        public static void DisplayInvalidMoveMessage()
         {
-            //i_ConsoleBoard.Clear();
-            Screen.Clear();
+            Console.WriteLine("Invalid move. Please try again.");
+        }
+
+        public static void DisplayInvalidFormatMessage()
+        {
+            Console.WriteLine("Invalid input. Please try again in the following format: (e.g., 'Fg>Eh'): ");
+        }
+
+        public static void DisplayPlayerScores(Player i_Player1, Player i_Player2)
+        {
+            Console.WriteLine($"{i_Player1.Name}'s score = {i_Player1.Score}");
+            Console.WriteLine($"{i_Player2.Name}'s score = {i_Player2.Score}");
+        }
+
+        public static void DisplayInvalidEnterKeyMessage()
+        {
+            Console.WriteLine("Invalid input. Please press enter");
+        }
+
+        public static void DisplayAnotherGameMessage()
+        {
+            Console.WriteLine("Would you like to play another game? Y/N");
         }
     }
 }
